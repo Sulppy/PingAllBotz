@@ -1,0 +1,3 @@
+TG_TOKEN = "6690139389:AAF9LUORIOKULgSxj3Ik6qDPAccZbTiMzAI"
+PROG_ID = *******
+PROG_HASH = "********"
