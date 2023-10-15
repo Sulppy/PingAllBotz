@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import sys
-from handlers import allping
+from echo.handlers import allping
 from config import TG_TOKEN
 from aiogram import Bot, Dispatcher
 
