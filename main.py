@@ -8,13 +8,15 @@ from aiogram import Bot, Dispatcher
 # Включаем логирование, чтобы не пропустить важные сообщения
 logging.basicConfig(level=logging.INFO)
 
+dp = Dispatcher()
+bot = Bot(token=TG_TOKEN)
 
 async def main() -> None:
     # Initialize Bot instance with a default parse mode which will be passed to all API calls
 
     # Диспетчер
-    dp = Dispatcher()
-    bot = Bot(token=TG_TOKEN)
+
+
     dp.include_routers(allping.router)
     # And the run events dispatching
     await bot.delete_webhook(drop_pending_updates=True)
