@@ -10,4 +10,7 @@ async def test(message: Message):
     members = []
     chatid = message.chat.id
     members = await get_chat_members(chatid)
-    await message.reply(f"Вы довольны своей работой? [all](tg://user?id={members})", parse_mode="Markdown")
+    mess = []
+    #for i in range(len(members)):
+    #    mess.append("tg://user?"+members[i])
+    await message.reply(f"Вы довольны своей работой? [all](tg://user?{members[0]})", parse_mode="Markdown")
