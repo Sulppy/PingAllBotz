@@ -10,7 +10,6 @@ router = Router()  # [1]
 @router.message(F.text, F.text.contains("@all"))
 async def echo_message(message: Message):
     chatid = message.chat.id
-    #men = await bot.get_chat_members(message.chat.id)
     members = await get_chat_members(chatid)
     mention = []
     for i in range(len(members)):
