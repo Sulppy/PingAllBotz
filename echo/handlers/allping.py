@@ -1,7 +1,6 @@
 from Costil.getchatu import get_chat_members
 from aiogram import Router, F, Bot, Dispatcher
 from aiogram.types import Message
-from main import dp, bot
 from config import TG_TOKEN
 
 router = Router()  # [1]
@@ -13,6 +12,6 @@ async def echo_message(message: Message):
     members = await get_chat_members(chatid)
     mention = []
     for i in range(len(members)):
-        mention.append("[\u2060](tg://user?id=" + members[i] + ")")
+        mention.append("[\u2060](tg://user?id=" + str(members[i]) + ")")
     mess_str = "".join(mention)
     await message.reply(f"Pinged{mess_str}", parse_mode="Markdown")
