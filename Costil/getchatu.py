@@ -20,6 +20,6 @@ async def get_chat_members(chat_id):
         await asyncio.sleep(e.value)
     chat_members = []
     async for member in app.get_chat_members(chat_id):
-        chat_members.append(member.user.id)  # TODO Ошибка, неверно вставляются данные (join или append)
+        chat_members.append(member.user.id)
     await app.stop()
     return chat_members
