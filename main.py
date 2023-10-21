@@ -1,13 +1,12 @@
 import asyncio
 import logging
 import sys
-from echo.handlers import allping
-from config import TG_TOKEN
+from handlers import allping
+from config_reader import config
 from aiogram import Bot, Dispatcher
 
 # Включаем логирование, чтобы не пропустить важные сообщения
 logging.basicConfig(level=logging.INFO)
-
 
 
 async def main() -> None:
@@ -15,7 +14,7 @@ async def main() -> None:
 
     # Диспетчер
     dp = Dispatcher()
-    bot = Bot(token=TG_TOKEN)
+    bot = Bot(token=config.tg_token.get_secret_value())
 
     dp.include_routers(allping.router)
     # And the run events dispatching

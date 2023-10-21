@@ -1,7 +1,6 @@
 from Costil.getchatu import get_chat_members
-from aiogram import Router, F, Bot, Dispatcher
+from aiogram import Router, F
 from aiogram.types import Message
-from config import TG_TOKEN
 
 router = Router()  # [1]
 

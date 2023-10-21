@@ -1,12 +1,11 @@
 import asyncio
-import pyrogram
-from pyrogram import Client, enums
+from pyrogram import Client
 from pyrogram.errors.exceptions.flood_420 import FloodWait
-import config
+from config_reader import config
 
-api_id = config.PROG_ID
-api_hash = config.PROG_HASH
-bot_token = config.TG_TOKEN
+api_id = config.prog_id.get_secret_value()
+api_hash = config.prog_hash.get_secret_value()
+bot_token = config.tg_token.get_secret_value()
 
 FloodWait()
 
