@@ -1,12 +1,14 @@
 import asyncio
 import logging
 import sys
-from handlers import allping
+from handlers import allping, dbinit
 from config_reader import config
 from aiogram import Bot, Dispatcher
 
 # Включаем логирование, чтобы не пропустить важные сообщения
 logging.basicConfig(level=logging.INFO)
+
+bot = Bot(token=config.tg_token.get_secret_value())
 
 
 async def main() -> None:
@@ -14,8 +16,7 @@ async def main() -> None:
 
     # Диспетчер
     dp = Dispatcher()
-    bot = Bot(token=config.tg_token.get_secret_value())
-
+    dp.include_routers(dbinit.router)
     dp.include_routers(allping.router)
     # And the run events dispatching
     await bot.delete_webhook(drop_pending_updates=True)
