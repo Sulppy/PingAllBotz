@@ -41,7 +41,7 @@ async def botadd(message: Message):
     entry = cur.fetchone()
     # Если нет, то добавляем новую строку со значениями
     if entry is None:
-        cur.execute(f"INSERT INTO chats VALUES ({chatid}, {message.chat.title}, {message.chat.type})")
+        cur.execute(f"INSERT INTO chats VALUES ({chatid}, '{message.chat.title}', '{message.chat.type}')")
         conn.commit()
     members = await get_chat_members(chatid)
     # Добавляем пользователей, которые есть в чате, в бд и к каждому пользователю сразу создается ссылка на пинг
@@ -53,7 +53,7 @@ async def botadd(message: Message):
         # Исключаем ботов из добавления в бд
         if (entry is None) and (user.user.is_bot == "False"):
             url = "[\u2060](tg://user?id=" + str(i) + ")"
-            cur.execute(f"INSERT INTO users VALUES ({i}, {user.user.username}, {url}, {chatid})")
+            cur.execute(f"INSERT INTO users VALUES ({i}, '{user.user.username}', '{url}', {chatid})")
             conn.commit()
     conn.close()
 
@@ -62,6 +62,7 @@ async def botadd(message: Message):
 @router.message(Command("add"), NOT_PRIVATE)
 async def add_db(message: Message):
     await botadd(message)
+    await message.answer("Добавлено!")
 
 
 # На случай, если в бд не во всех чатах проставились типы чата
