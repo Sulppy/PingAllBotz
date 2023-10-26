@@ -14,9 +14,11 @@ async def get_chat_members(chat_id):
     app = Client("PyroBot", api_id=api_id, api_hash=api_hash, bot_token=bot_token, in_memory=True)
     try:
         await app.start()
-        await asyncio.sleep(3)
+        await asyncio.sleep(5)
     except FloodWait as e:
         await asyncio.sleep(e.value)
+        await app.start()
+        await asyncio.sleep(5)
     chat_members = []
     async for member in app.get_chat_members(chat_id):
         chat_members.append(member.user.id)
