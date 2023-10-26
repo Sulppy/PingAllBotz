@@ -51,7 +51,7 @@ async def botadd(message: Message):
         # С помощью метода GetChatMember берутся все данные пользователя
         user = await bot(GetChatMember(chat_id=chatid, user_id=i))
         # Исключаем ботов из добавления в бд
-        if (entry is None) and (user.user.is_bot == "False"):
+        if (entry is None) and (user.user.is_bot is False):
             url = "[\u2060](tg://user?id=" + str(i) + ")"
             cur.execute(f"INSERT INTO users VALUES ({i}, '{user.user.username}', '{url}', {chatid})")
             conn.commit()
