@@ -80,14 +80,6 @@ async def botadmin(member: ChatMemberUpdated):
     await member.answer("Готов к работе!")
     conn.close()
 
-
-# Если бот не сработал на добавление, то можно использовать эту команду в чате, чтобы запарсить данные
-# Только для личного пользования!!!
-@router.message(Command("add"), NOT_PRIVATE, F.from_user.id == int(ADMIN_ID))
-async def add_db(message: Message):
-    await botadmin(message)
-
-
 # На случай, если в бд не во всех чатах проставились типы чата
 @router.message(Command("addchats_type"), IS_PRIVATE)
 async def add_chattype():
