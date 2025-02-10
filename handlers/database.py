@@ -1,6 +1,6 @@
 import sqlite3
 from config_reader import config
-from Costil.getchatu import get_chat_members
+from src.getchatu import get_chat_members
 from aiogram import Router, F
 from aiogram.filters import ChatMemberUpdatedFilter, Command, JOIN_TRANSITION, IS_MEMBER, IS_NOT_MEMBER, IS_ADMIN
 from aiogram.types import Message, ChatMemberUpdated
@@ -16,7 +16,7 @@ IS_PRIVATE = F.chat.type == "private"
 NOT_PRIVATE = F.chat.type != "private"
 
 # Название файла бд
-bd = 'data.sqlite'
+bd = config.database.get_bd()
 
 
 # функция по добавлению пользователей в бд
@@ -54,21 +54,6 @@ async def botadmin(member: ChatMemberUpdated):
     conn = sqlite3.connect(bd)
     cur = conn.cursor()
     await member.answer("Дайте пару секунд и всё будет готово")
-    # Если её нет, то создается таблица чатов
-    cur.execute("CREATE TABLE IF NOT EXISTS chats("
-                "chat_id INTEGER NOT NULL PRIMARY KEY, "
-                "chat_title TEXT, "
-                "chat_type TEXT NOT NULL)"
-                )
-    conn.commit()
-    # Если её нет, то создаётся таблица юзеров
-    cur.execute("CREATE TABLE IF NOT EXISTS users("
-                "user_id INTEGER NOT NULL, "
-                "user_name TEXT, "
-                "url_ping TEXT NOT NULL, "
-                "chat_id INTEGER NOT NULL)"
-                )
-    conn.commit()
     chatid = member.chat.id
     # Проверка, есть ли этот чат в таблице чатов
     cur.execute(f"SELECT * FROM chats WHERE chat_id = {chatid}")

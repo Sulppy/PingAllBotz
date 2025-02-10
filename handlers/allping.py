@@ -1,5 +1,5 @@
 import sqlite3
-from handlers.dbinit import botadmin
+from handlers.database import botadmin
 from aiogram import Router, F
 from aiogram.types import Message
 
