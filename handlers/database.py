@@ -97,7 +97,7 @@ async def delmem(member: ChatMemberUpdated):
     if user.is_bot is False:
         conn = sqlite3.connect(bd)
         cur = conn.cursor()
-        cur.execute(f"DELETE FROM users WHERE chat_id = {chatid} AND user_id = {user.id}")
+        cur.execute(f"DELETE FROM chat_user WHERE chat_id = {chatid} AND user_id = {user.id};")
         conn.commit()
         conn.close()
 
