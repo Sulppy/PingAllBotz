@@ -1,11 +1,12 @@
 import sqlite3
 from config_reader import config
-from src.getchatu import get_chat_members
+from src.getchatu import get_chat_members, pyroadd
 from aiogram import Router, F
 from aiogram.filters import ChatMemberUpdatedFilter, Command, JOIN_TRANSITION, IS_MEMBER, IS_NOT_MEMBER, IS_ADMIN
-from aiogram.types import Message, ChatMemberUpdated
+from aiogram.types import ChatMemberUpdated
 from aiogram.methods import GetChatMember, GetChat, GetChatMemberCount
 from main import bot
+from src.initdb import check_chat
 
 router = Router()  # [1]
 
@@ -22,7 +23,19 @@ bd = config.database_name.get_secret_value()
 # При присоединении просим админку, если её нет, а если есть, то парсим данные
 @router.my_chat_member(ChatMemberUpdatedFilter(JOIN_TRANSITION), NOT_PRIVATE)
 async def botadd(member: ChatMemberUpdated):
+    add_user = member.from_id
+    chatid = member.chat.id
     admin = await bot(GetChatMember(chat_id=member.chat.id, user_id=member.new_chat_member.user.id))
+    # Проверка, есть ли этот чат в таблице чатов
+    conn = sqlite3.connect(bd)
+    cur = conn.cursor()
+    if check_chat(chatid) is None:
+        cur.execute(f"INSERT INTO chat VALUES ({chatid}, {add_user});")
+        conn.commit()
+    else:
+        cur.execute(f"UPDATE chat SET invited_user_id={add_user} WHERE chat_id = {chatid};")
+        conn.commit()
+    conn.close()
     if admin.status == "administrator":
         await botadmin(member)
     else:
