@@ -23,7 +23,6 @@ async def init_pyrogram():
     except FloodWait as e:
         await asyncio.sleep(e.value)
 
-
 async def get_chat_members(chat_id):
     chat_members = []
     async for member in app.get_chat_members(chat_id):
@@ -43,7 +42,7 @@ async def pyroadd(chatid):
         user = await bot(GetChatMember(chat_id=chatid, user_id=i))
         # Исключаем ботов из добавления в бд
         if (not entry.contains(i)) and (user.user.is_bot is False):
-            cur.execute(f"INSERT INTO chat_user VALUES {i}, {chatid};")
+            cur.execute(f"INSERT INTO chat_user VALUES ({i}, {chatid});")
             conn.commit()
     conn.close()
 
@@ -53,6 +52,7 @@ async def check_user_member(chatid):
     memcount = await bot(GetChatMemberCount(chat_id=chatid))
     cur.execute(f"SELECT user_id FROM chat_user WHERE chat_id = {chatid}")
     result = cur.fetchall()
+    conn.close()
     userids = [i[0] for i in result]
     # сравниваем количество для ускорения работы
     if memcount == range(len(userids)):
