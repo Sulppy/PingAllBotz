@@ -1,10 +1,10 @@
 import sqlite3
 from config_reader import config
-from src.getchatu import get_chat_members, pyroadd
+from src.getchatu import pyroadd
 from aiogram import Router, F
-from aiogram.filters import ChatMemberUpdatedFilter, Command, JOIN_TRANSITION, IS_MEMBER, IS_NOT_MEMBER, IS_ADMIN
+from aiogram.filters import ChatMemberUpdatedFilter, JOIN_TRANSITION, IS_MEMBER, IS_NOT_MEMBER, IS_ADMIN
 from aiogram.types import ChatMemberUpdated
-from aiogram.methods import GetChatMember, GetChat, GetChatMemberCount
+from aiogram.methods import GetChatMember
 from main import bot
 from src.initdb import check_chat
 
@@ -23,17 +23,17 @@ bd = config.database_name.get_secret_value()
 # При присоединении просим админку, если её нет, а если есть, то парсим данные
 @router.my_chat_member(ChatMemberUpdatedFilter(JOIN_TRANSITION), NOT_PRIVATE)
 async def botadd(member: ChatMemberUpdated):
-    add_user = member.from_id
+    add_user = member.from_user
     chatid = member.chat.id
     admin = await bot(GetChatMember(chat_id=member.chat.id, user_id=member.new_chat_member.user.id))
     # Проверка, есть ли этот чат в таблице чатов
     conn = sqlite3.connect(bd)
     cur = conn.cursor()
-    if check_chat(chatid) is None:
-        cur.execute(f"INSERT INTO chat VALUES ({chatid}, {add_user});")
+    if check_chat(chatid) is False:
+        cur.execute(f"INSERT INTO chat VALUES ({chatid}, {add_user.id});")
         conn.commit()
     else:
-        cur.execute(f"UPDATE chat SET invited_user_id={add_user} WHERE chat_id = {chatid};")
+        cur.execute(f"UPDATE chat SET invited_user_id={add_user.id} WHERE id = {chatid};")
         conn.commit()
     conn.close()
     if admin.status == "administrator":
@@ -72,7 +72,7 @@ async def addmem(member: ChatMemberUpdated):
     if user.is_bot is False:
         conn = sqlite3.connect(bd)
         cur = conn.cursor()
-        cur.execute(f"SELECT user_id, chat_id FROM user WHERE user_id = {user.id} AND chat_id = {chatid};")
+        cur.execute(f"SELECT * FROM chat_user WHERE user_id = {user.id} AND chat_id = {chatid};")
         result = cur.fetchone()
         if (user.is_bot is False) and (result is None):
             cur.execute(f"INSERT INTO chat_user VALUES ({user.id}, {chatid});")

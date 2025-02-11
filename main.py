@@ -1,10 +1,8 @@
 import asyncio
 import logging
 import sys
-import handlers
 from handlers import database, allping, superuser
 
-from src.getchatu import init_pyrogram
 from config_reader import config
 from aiogram import Bot, Dispatcher
 
@@ -22,6 +20,7 @@ async def main() -> None:
     init_db()
     print("Database initialized.")
     print("Initializing pyrogram...")
+    from src.getchatu import init_pyrogram
     await init_pyrogram() #Initialization Pyrogram
     print("Pyrogram initialized.")
 
