@@ -45,32 +45,10 @@ async def botadd(member: ChatMemberUpdated):
 # Как только получили админку запускаем парсинг
 @router.my_chat_member(ChatMemberUpdatedFilter(IS_ADMIN), NOT_PRIVATE)
 async def botadmin(member: ChatMemberUpdated):
-    conn = sqlite3.connect(bd)
-    cur = conn.cursor()
     await member.answer("Дайте пару секунд и всё будет готово")
     chatid = member.chat.id
-    # Проверка, есть ли этот чат в таблице чатов
-    cur.execute(f"SELECT * FROM chats WHERE chat_id = {chatid}")
-    result = cur.fetchone()
-    # Если нет, то добавляем новую строку со значениями
-    if result is None:
-        cur.execute(f"INSERT INTO chats VALUES ({chatid}, '{member.chat.title}', '{member.chat.type}')")
-        conn.commit()
-    # Подготовка к проверке совпадений пользователей, чтобы лишний раз не тормошить pyrogram и не словить FloodWait
-    memcount = await bot(GetChatMemberCount(chat_id=member.chat.id))
-    cur.execute(f"SELECT user_id FROM users WHERE chat_id = {chatid}")
-    result = cur.fetchall()
-    userids = [i[0] for i in result]
-    # сравниваем количество для ускорения работы
-    if memcount == range(len(userids)):
-        # проходимся по каждому юзеру, если кого-то нет, то запускаем полную проверку с 0
-        for i in userids:
-            user = await bot(GetChatMember(chat_id=chatid, user_id=i))
-            if user.status is not str(IS_MEMBER):
-                await pyroadd(chatid)
-                break
-    else:
-        await pyroadd(chatid)
+    # Если нет чата, то добавляем новую строку со значениями
+    await pyroadd(chatid)
     await member.answer("Готов к работе!")
 
 # Если пользователь выходит из чата, то удаляем его и из бд (может сработать и на выход бота, так что фильтруем)
