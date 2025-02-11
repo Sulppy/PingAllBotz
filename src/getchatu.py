@@ -3,6 +3,8 @@ from pyrogram import Client
 from pyrogram.errors.exceptions.flood_420 import FloodWait
 from config_reader import config
 
+from main import bot
+
 api_id = config.prog_id.get_secret_value()
 api_hash = config.prog_hash.get_secret_value()
 bot_token = config.tg_token.get_secret_value()
