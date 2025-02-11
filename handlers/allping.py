@@ -1,7 +1,10 @@
 import sqlite3
-from handlers.database import botadmin
 from aiogram import Router, F
+from aiogram.filters import Command
 from aiogram.types import Message
+
+from config_reader import config
+from src.getchatu import pyroadd
 
 router = Router()
 router.message.filter(
@@ -12,18 +15,16 @@ router.message.filter(
 @router.message(F.text, F.text.contains("@all"))
 async def echo_message(message: Message):
     chatid = message.chat.id
-    conn = sqlite3.connect('data.sqlite')
+    conn = sqlite3.connect(config.database_name.get_secret_value())
     cur = conn.cursor()
-    cur.execute(f"SELECT * FROM chats WHERE chat_id = {chatid}")
+    cur.execute(f"SELECT chat_id FROM chats_user WHERE chat_id = {chatid}")
     entry = cur.fetchone()
+    message_str = ""
     if entry is None:
-        await message.answer(f"Похоже, что я впервые в этом чате, подождите немного ☺️")
-        await botadmin(message)
-    cur.execute(f"SELECT url_ping FROM users WHERE chat_id = {chatid}")
-    members = cur.fetchall()
-    mention = [i[0] for i in members]
-    mess_str = "".join(mention)
-    await message.reply(f"@{message.from_user.username} созывает всех!{mess_str}", parse_mode="Markdown")
+        await pyroadd(chatid)
+    for i in entry:
+        message_str += "[\u2060](tg://user?id=" + str(i) + ")"
+    await message.reply(f"@{message.from_user.username} созывает всех!{message_str}", parse_mode="Markdown")
     conn.close()
 
 
