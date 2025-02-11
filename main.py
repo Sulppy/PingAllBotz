@@ -1,10 +1,10 @@
 import asyncio
 import logging
 import sys
+import handlers
+from handlers import database, allping, superuser
 
 from src.getchatu import init_pyrogram
-from handlers import allping, superuser
-from handlers import allping, database
 from config_reader import config
 from aiogram import Bot, Dispatcher
 
