@@ -107,12 +107,12 @@ async def delmem(member: ChatMemberUpdated):
 async def addmem(member: ChatMemberUpdated):
     chatid = member.chat.id
     user = member.new_chat_member.user
-    conn = sqlite3.connect(bd)
-    cur = conn.cursor()
-    cur.execute(f"SELECT user_id, chat_id FROM users WHERE user_id = {user.id} AND chat_id = {chatid}")
-    result = cur.fetchone()
-    if (user.is_bot is False) and (result is None):
-        url = "[\u2060](tg://user?id=" + str(user.id) + ")"
-        cur.execute(f"INSERT INTO users VALUES ({user.id}, '{user.username}', '{url}', {chatid})")
-        conn.commit()
-    conn.close()
+    if user.is_bot is False:
+        conn = sqlite3.connect(bd)
+        cur = conn.cursor()
+        cur.execute(f"SELECT user_id, chat_id FROM user WHERE user_id = {user.id} AND chat_id = {chatid};")
+        result = cur.fetchone()
+        if (user.is_bot is False) and (result is None):
+            cur.execute(f"INSERT INTO chat_user VALUES ({user.id}, {chatid});")
+            conn.commit()
+        conn.close()
