@@ -16,7 +16,6 @@ bd = config.database_name.get_secret_value()
 async def init_pyrogram():
     try:
         await app.start()
-        await asyncio.sleep(5)
     except FloodWait as e:
         await asyncio.sleep(e.value)
 
@@ -25,7 +24,6 @@ async def get_chat_members(chat_id):
     chat_members = []
     async for member in app.get_chat_members(chat_id):
         chat_members.append(member.user.id)
-    await app.stop()
     return chat_members
 
 # функция по добавлению пользователей в бд
