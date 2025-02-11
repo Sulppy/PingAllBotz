@@ -8,6 +8,8 @@ class Settings(BaseSettings):
     tg_token: SecretStr
     prog_id: SecretStr
     prog_hash: SecretStr
+    admin_id: SecretStr
+    database_name: SecretStr
 
     # Начиная со второй версии pydantic, настройки класса настроек задаются
     # через model_config
