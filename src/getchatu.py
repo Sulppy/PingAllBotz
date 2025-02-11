@@ -9,6 +9,7 @@ bot_token = config.tg_token.get_secret_value()
 
 FloodWait()
 app = Client("PyroBot", api_id=api_id, api_hash=api_hash, bot_token=bot_token, in_memory=True)
+bd = config.database_name.get_secret_value()
 
 async def init_pyrogram():
     try:
