@@ -12,7 +12,7 @@ router.message.filter(
 )
 
 
-@router.message(F.text, F.text.contains("@all"))
+@router.message(Command("allping"))
 async def echo_message(message: Message):
     chatid = message.chat.id
     conn = sqlite3.connect(config.database_name.get_secret_value())
