@@ -16,26 +16,7 @@ IS_PRIVATE = F.chat.type == "private"
 NOT_PRIVATE = F.chat.type != "private"
 
 # Название файла бд
-bd = config.database.get_bd()
-
-
-# функция по добавлению пользователей в бд
-async def pyroadd(chatid):
-    conn = sqlite3.connect(bd)
-    cur = conn.cursor()
-    members = await get_chat_members(chatid)
-    # Добавляем пользователей, которые есть в чате, в бд и к каждому пользователю сразу создается ссылка на пинг
-    for i in members:
-        cur.execute(f"SELECT * FROM users WHERE chat_id = {chatid} AND user_id = {i}")
-        entry = cur.fetchone()
-        # С помощью метода GetChatMember берутся все данные пользователя
-        user = await bot(GetChatMember(chat_id=chatid, user_id=i))
-        # Исключаем ботов из добавления в бд
-        if (entry is None) and (user.user.is_bot is False):
-            url = "[\u2060](tg://user?id=" + str(i) + ")"
-            cur.execute(f"INSERT INTO users VALUES ({i}, '{user.user.username}', '{url}', {chatid})")
-            conn.commit()
-    conn.close()
+bd = config.database_name.get_secret_value()
 
 
 # При присоединении просим админку, если её нет, а если есть, то парсим данные
