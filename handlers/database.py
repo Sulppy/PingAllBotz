@@ -72,22 +72,6 @@ async def botadmin(member: ChatMemberUpdated):
     else:
         await pyroadd(chatid)
     await member.answer("Готов к работе!")
-    conn.close()
-
-# На случай, если в бд не во всех чатах проставились типы чата
-@router.message(Command("addchats_type"), IS_PRIVATE)
-async def add_chattype():
-    conn = sqlite3.connect(bd)
-    cur = conn.cursor()
-    cur.execute(f"SELECT chat_id FROM chats")
-    result = cur.fetchall()
-    chatid = [i[0] for i in result]
-    for i in chatid:
-        chat = await bot(GetChat(chat_id=i))
-        cur.execute(f"UPDATE chats SET chat_title='{chat.title}', chat_type='{chat.type}' WHERE chat_id = {i};")
-        conn.commit()
-    conn.close()
-
 
 # Если пользователь выходит из чата, то удаляем его и из бд (может сработать и на выход бота, так что фильтруем)
 @router.chat_member(ChatMemberUpdatedFilter(IS_MEMBER >> IS_NOT_MEMBER), NOT_PRIVATE)
