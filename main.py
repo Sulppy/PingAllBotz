@@ -1,8 +1,6 @@
 import asyncio
 import logging
 import sys
-import threading
-from threading import Thread
 
 from handlers import database, allping, superuser
 
