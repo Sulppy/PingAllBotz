@@ -1,12 +1,11 @@
-import sqlite3
-from config_reader import config
+from src.config_reader import config
 from src.getchatu import pyroadd
 from aiogram import Router, F
 from aiogram.filters import ChatMemberUpdatedFilter, JOIN_TRANSITION, IS_MEMBER, IS_NOT_MEMBER, IS_ADMIN
 from aiogram.types import ChatMemberUpdated
 from aiogram.methods import GetChatMember
 from main import bot
-from src.initdb import check_chat
+from src.database import check_chat, conn
 
 router = Router()  # [1]
 
@@ -16,9 +15,6 @@ ADMIN_ID = config.admin_id.get_secret_value()
 IS_PRIVATE = F.chat.type == "private"
 NOT_PRIVATE = F.chat.type != "private"
 
-# Название файла бд
-bd = config.database_name.get_secret_value()
-
 
 # При присоединении просим админку, если её нет, а если есть, то парсим данные
 @router.my_chat_member(ChatMemberUpdatedFilter(JOIN_TRANSITION), NOT_PRIVATE)
@@ -27,7 +23,7 @@ async def botadd(member: ChatMemberUpdated):
     chatid = member.chat.id
     admin = await bot(GetChatMember(chat_id=member.chat.id, user_id=member.new_chat_member.user.id))
     # Проверка, есть ли этот чат в таблице чатов
-    conn = sqlite3.connect(bd)
+    
     cur = conn.cursor()
     if check_chat(chatid) is False:
         cur.execute(f"INSERT INTO chat VALUES ({chatid}, {add_user.id});")
@@ -35,7 +31,7 @@ async def botadd(member: ChatMemberUpdated):
     else:
         cur.execute(f"UPDATE chat SET invited_user_id={add_user.id} WHERE id = {chatid};")
         conn.commit()
-    conn.close()
+
     if admin.status == "administrator":
         await botadmin(member)
     else:
@@ -57,11 +53,11 @@ async def delmem(member: ChatMemberUpdated):
     chatid = member.chat.id
     user = member.new_chat_member.user
     if user.is_bot is False:
-        conn = sqlite3.connect(bd)
+        
         cur = conn.cursor()
         cur.execute(f"DELETE FROM chat_user WHERE chat_id = {chatid} AND user_id = {user.id};")
         conn.commit()
-        conn.close()
+    
 
 
 # Если пользователь присоединяется к чату, то его автоматом закидывает в бд
@@ -70,11 +66,11 @@ async def addmem(member: ChatMemberUpdated):
     chatid = member.chat.id
     user = member.new_chat_member.user
     if user.is_bot is False:
-        conn = sqlite3.connect(bd)
+        
         cur = conn.cursor()
         cur.execute(f"SELECT * FROM chat_user WHERE user_id = {user.id} AND chat_id = {chatid};")
         result = cur.fetchone()
         if (user.is_bot is False) and (result is None):
             cur.execute(f"INSERT INTO chat_user VALUES ({user.id}, {chatid});")
             conn.commit()
-        conn.close()
+    

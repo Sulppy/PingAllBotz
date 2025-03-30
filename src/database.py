@@ -1,11 +1,13 @@
 import sqlite3
-from config_reader import config
+from src.config_reader import config
 
 bd = config.database_name.get_secret_value()
 
+conn = sqlite3.connect(bd)
+
 def init_db():
-    conn = sqlite3.connect(bd)
     cur = conn.cursor()
+    cur.execute("PRAGMA journal_mode=WAL;")
     cur.execute("CREATE TABLE IF NOT EXISTS chat("
                 "id INTEGER PRIMARY KEY,"
                 "invited_user_id INTEGER NOT NULL);"
@@ -17,12 +19,9 @@ def init_db():
                 "CONSTRAINT fk_chat_id FOREIGN KEY (chat_id) REFERENCES chat(id));"
                 )
     conn.commit()
-    conn.close()
 
 def check_chat(chatid: int):
-    conn = sqlite3.connect(bd)
     cur = conn.cursor()
     cur.execute(f"SELECT * FROM chat WHERE id = {chatid};")
     result = cur.fetchone()
-    conn.close()
     return result is not None

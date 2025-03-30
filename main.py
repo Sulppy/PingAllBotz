@@ -7,7 +7,7 @@ from handlers import database, allping, superuser
 from config_reader import config
 from aiogram import Bot, Dispatcher
 
-from src.initdb import init_db
+from src.database import init_db, conn
 
 # Включаем логирование, чтобы не пропустить важные сообщения
 logging.basicConfig(level=logging.INFO)
@@ -43,22 +43,31 @@ async def main() -> None:
     dp.include_routers(allping.router)
     dp.include_routers(superuser.router)
     print("Handler initialized.")
-    # And the run events dispatching
-    await bot.delete_webhook(drop_pending_updates=True)
     print("Bot started.")
-    async def thread():
+    async def console_input():
         while True:
-            x = input()
+            x = await ainput()
+            x = x.strip()
             if x in {"exit", "quit", "q"}:
                 await dp.stop_polling()
                 break
             else:
                 print(f"{BColors.WARNING}Неверная команда.{BColors.ENDC}")
-    asyncio.create_task(thread())
-    await dp.start_polling(bot)
+    console_task = asyncio.create_task(console_input())
+    await dp.start_polling(bot, skip_updates=True)
+    await console_task
+    await stop_pyrogram()
+    conn.close()
     print("Bot stopped.")
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
-    asyncio.run(main())
+    logging.basicConfig(level=logging.DEBUG, stream=sys.stdout)
+    loop = asyncio.get_event_loop()
+    try:
+        loop.run_until_complete(main())
+    finally:
+        from src.getchatu import stop_pyrogram, app
+        if app.is_initialized:
+            loop.run_until_complete(app.stop())  # Убеждаемся, что Pyrogram остановлен
+        loop.close()

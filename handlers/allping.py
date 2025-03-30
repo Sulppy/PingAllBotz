@@ -12,11 +12,9 @@ router.message.filter(
 @router.message(Command("all"))
 async def ping_all(message: Message):
     chatid = message.chat.id
-    conn = sqlite3.connect(config.database_name.get_secret_value())
     cur = conn.cursor()
     cur.execute(f"SELECT user_id FROM chat_user WHERE chat_id = {chatid}")
     entry = cur.fetchone()
-    conn.close()
     message_str = ""
     if entry is None:
        from src.getchatu import pyroadd

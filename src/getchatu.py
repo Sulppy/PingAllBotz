@@ -18,10 +18,10 @@ app = Client("PyroBot", api_id=api_id, api_hash=api_hash, bot_token=bot_token, i
 bd = config.database_name.get_secret_value()
 
 async def init_pyrogram():
-    try:
-        await app.start()
-    except FloodWait as e:
-        await asyncio.sleep(e.value)
+    await app.start()
+
+async def stop_pyrogram():
+    await app.stop()
 
 async def get_chat_members(chat_id):
     chat_members = []
@@ -34,14 +34,14 @@ async def pyroadd(chatid):
     conn = sqlite3.connect(bd)
     cur = conn.cursor()
     members = await get_chat_members(chatid)
-    cur.execute(f"SELECT * FROM chat_user WHERE chat_id = {chatid};")
-    entry = cur.fetchone()
-    # Добавляем пользователей, которые есть в чате, в бд и к каждому пользователю сразу создается ссылка на пинг
+    cur.execute(f"SELECT user_id FROM chat_user WHERE chat_id = {chatid};")
+    entry = cur.fetchall()
+    # Добавляем пользователей, которые есть в чате, в бд
     for i in members:
         # С помощью метода GetChatMember берутся все данные пользователя
         user = await bot(GetChatMember(chat_id=chatid, user_id=i))
         # Исключаем ботов из добавления в бд
-        if (not entry.contains(i)) and (user.user.is_bot is False):
+        if (not i in entry) and (user.user.is_bot is False):
             cur.execute(f"INSERT INTO chat_user VALUES ({i}, {chatid});")
             conn.commit()
     conn.close()
