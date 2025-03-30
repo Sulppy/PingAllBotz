@@ -1,9 +1,7 @@
-import sqlite3
 from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message
-
-from config_reader import config
+from src.database import conn
 
 router = Router()
 router.message.filter(
@@ -11,8 +9,8 @@ router.message.filter(
 )
 
 
-@router.message(Command("allping"))
-async def echo_message(message: Message):
+@router.message(Command("all"))
+async def ping_all(message: Message):
     chatid = message.chat.id
     conn = sqlite3.connect(config.database_name.get_secret_value())
     cur = conn.cursor()
