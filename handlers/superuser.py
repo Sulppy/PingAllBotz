@@ -2,7 +2,7 @@ from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message
 
-from config_reader import config
+from src.config_reader import config
 
 router = Router()
 ADMIN_ID = config.admin_id.get_secret_value()

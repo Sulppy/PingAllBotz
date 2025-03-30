@@ -2,9 +2,11 @@ import asyncio
 import logging
 import sys
 
+from pyrogram.utils import ainput
+
 from handlers import database, allping, superuser
 
-from config_reader import config
+from src.config_reader import config
 from aiogram import Bot, Dispatcher
 
 from src.database import init_db, conn
@@ -32,10 +34,9 @@ async def main() -> None:
     init_db()
     print("Database initialized.")
     print("Initializing pyrogram...")
-    from src.getchatu import init_pyrogram
+    from src.getchatu import init_pyrogram, stop_pyrogram
     await init_pyrogram() #Initialization Pyrogram
     print("Pyrogram initialized.")
-
     # Диспетчер
     print("Initializing handlers...")
     dp = Dispatcher()
@@ -49,6 +50,7 @@ async def main() -> None:
             x = await ainput()
             x = x.strip()
             if x in {"exit", "quit", "q"}:
+                print("Stopping bot...")
                 await dp.stop_polling()
                 break
             else:

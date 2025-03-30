@@ -5,7 +5,7 @@ from aiogram.filters import IS_MEMBER
 from aiogram.methods import GetChatMember, GetChatMemberCount
 from pyrogram import Client
 from pyrogram.errors.exceptions.flood_420 import FloodWait
-from config_reader import config
+from src.config_reader import config
 
 from main import bot
 
