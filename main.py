@@ -56,7 +56,8 @@ async def main() -> None:
             else:
                 print(f"{BColors.WARNING}Неверная команда.{BColors.ENDC}")
     console_task = asyncio.create_task(console_input())
-    await dp.start_polling(bot, skip_updates=True)
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dp.start_polling(bot)
     await console_task
     await stop_pyrogram()
     conn.close()
