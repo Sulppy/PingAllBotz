@@ -19,6 +19,8 @@ async def ping_all(message: Message):
     if entry is None:
        from src.getchatu import pyroadd
        await pyroadd(chatid)
+       cur.execute(f"SELECT user_id FROM chat_user WHERE chat_id = {chatid}")
+       entry = cur.fetchone()
     for i in entry:
         message_str += "[\u2060](tg://user?id=" + str(i) + ")"
     await message.reply(f"@{message.from_user.username} созывает всех!{message_str}", parse_mode="Markdown")
